@@ -16,7 +16,7 @@ internal class QuestionPack
 
     public QuestionPack(string name = "<PackName>", string? category = null, Difficulty difficulty = Difficulty.Medium, int timeLimitInSeconds = 30, ObjectId id = new ObjectId())
     {
-        Id = id;
+        Id = ObjectId.GenerateNewId();
         Name = name;
         Category = category;
         Difficulty = difficulty;
@@ -24,12 +24,4 @@ internal class QuestionPack
         Questions = new List<Question>();
     }
 
-   /* public QuestionPack(QuestionPack pack)
-    {
-        Id = pack.Id;
-        Name = pack.Name;
-        Category = pack.Category;
-        TimeLimitInSeconds = pack.TimeLimitInSeconds;
-        Questions = pack.Questions;
-    }*/
 }

@@ -3,6 +3,7 @@ using Laboration_3.Model;
 using MongoDB.Driver;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace Laboration_3.ViewModel
 {
@@ -11,7 +12,7 @@ namespace Laboration_3.ViewModel
         public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
-        public QuestionPackViewModel ActivePacksCopy { get; set; }
+        public QuestionPackViewModel ActivePackCopy { get; set; }
         public IMongoCollection<QuestionPackViewModel> QuestionCollection { get; set; }
 
 
@@ -201,14 +202,13 @@ namespace Laboration_3.ViewModel
         {
             Packs = new ObservableCollection<QuestionPackViewModel>();
 
-            var filter = Builders<QuestionPackViewModel>.Filter.Exists("_id", true);
-            
-            var questionPacksExist = QuestionCollection.Find(filter).FirstOrDefault();
-
-
             try
             {
-                if (questionPacksExist is not null)
+                var filter = Builders<QuestionPackViewModel>.Filter.Exists("_id", true);
+
+                var questionPacksExist = QuestionCollection.Find(filter).FirstOrDefault();
+
+                if (questionPacksExist != null)
                 {
                     GetCollection();
                     ActivePack = Packs?.FirstOrDefault();
@@ -218,8 +218,10 @@ namespace Laboration_3.ViewModel
                     ActivePack = new QuestionPackViewModel(new QuestionPack("Default Question Pack"));
                     Packs.Add(ActivePack);
                 }
+
                 QuestionCollection.InsertMany(Packs);
-                ActivePacksCopy = MakeQuestionPackViewModelCopy(ActivePack);
+                
+                ActivePackCopy = GetQuestionPackViewModelCopy(ActivePack);
             }
             catch (Exception e)
             {
@@ -227,38 +229,29 @@ namespace Laboration_3.ViewModel
             }
         }
 
-        public QuestionPackViewModel MakeQuestionPackViewModelCopy(QuestionPackViewModel model)
+        public QuestionPackViewModel GetQuestionPackViewModelCopy(QuestionPackViewModel model)
         {
-            return new QuestionPackViewModel(new QuestionPack(model.Name, model.Category, model.Difficulty, model.TimeLimitInSeconds, model.Id));
+            var copy = new QuestionPackViewModel(new QuestionPack());
+
+            copy.Id = model.Id;
+            copy.Name = model.Name;
+            copy.Category = model.Category;
+            copy.Difficulty = model.Difficulty;
+            copy.TimeLimitInSeconds = model.TimeLimitInSeconds;
+            copy.Questions = model.Questions;
+            
+            return copy;
         }
 
         public void SaveToMongoDbAsync()
-        {
-            //if (!ActivePacksCopy.Equals(ActivePack))
-            //{
-            //    foreach (var question in ActivePack.Questions)
-            //    {
-            //        var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", question.Id);
-            //        var replacement = Builders<QuestionPackViewModel>.SetFields
-
-            //        QuestionCollection.FindOneAndReplaceAsync(filter, );
-
-            //        var toRemove = ActivePacksCopy.Questions.FirstOrDefault(q => q.Id == question.Id);
-            //        ActivePacksCopy.Questions.Remove(toRemove);
-
-            //        var toAdd = ActivePack.Questions.FirstOrDefault(q => q.Id == question.Id);
-            //        ActivePacksCopy.Questions.Add(question);
-
-            //    }
-            //}
-
-            if (ActivePack is not null && !ActivePacksCopy.Equals(ActivePack))
+        {   
+            if (ActivePack != null && !ActivePackCopy.Equals(ActivePack))
             {
                 var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", ActivePack.Id);
 
                 QuestionCollection.ReplaceOne(filter, ActivePack);
 
-                ActivePacksCopy = MakeQuestionPackViewModelCopy(ActivePack);
+                ActivePackCopy = GetQuestionPackViewModelCopy(ActivePack);
             }
         }
 

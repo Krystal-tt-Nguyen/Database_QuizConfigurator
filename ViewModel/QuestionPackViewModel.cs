@@ -38,8 +38,6 @@ namespace Laboration_3.ViewModel
             }
         }
 
-        private string? category;
-
         public string? Category
         {
             get => model.Category;
@@ -49,8 +47,6 @@ namespace Laboration_3.ViewModel
                 RaisePropertyChanged();
             }
         }
-
-        private ObjectId id;
 
         public ObjectId Id
         {
@@ -63,20 +59,13 @@ namespace Laboration_3.ViewModel
         }
 
 
-        public ObservableCollection<Question> Questions  { get; }
+        public ObservableCollection<Question> Questions  { get; set; }
 
         public QuestionPackViewModel(QuestionPack model)
         {
             this.model = model;
             this.Questions = new ObservableCollection<Question>(model.Questions);
         }
-        /*public QuestionPackViewModel(QuestionPackViewModel pack)
-        {
-            Name = pack.Name;
-            Id = pack.Id;
-            Category = pack.Category;
-            TimeLimitInSeconds = pack.TimeLimitInSeconds;
-            Questions = pack.Questions;
-        }*/
+
     }
 }
