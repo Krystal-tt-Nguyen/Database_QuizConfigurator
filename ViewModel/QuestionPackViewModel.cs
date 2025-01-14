@@ -6,7 +6,7 @@ namespace Laboration_3.ViewModel
 {
     internal class QuestionPackViewModel : ViewModelBase
     {
-        private readonly QuestionPack model;
+        public QuestionPack model;
 
         public string Name 
         { 
@@ -59,12 +59,20 @@ namespace Laboration_3.ViewModel
         }
 
 
-        public ObservableCollection<Question> Questions  { get; set; }
+        public ObservableCollection<Question> Questions  
+        {
+            get => model.Questions;
+            set
+            {
+                model.Questions = value;
+                RaisePropertyChanged();
+            }
+        }
 
         public QuestionPackViewModel(QuestionPack model)
         {
             this.model = model;
-            this.Questions = new ObservableCollection<Question>(model.Questions);
+            //this.Questions = new ObservableCollection<Question>(model.Questions);
         }
 
     }

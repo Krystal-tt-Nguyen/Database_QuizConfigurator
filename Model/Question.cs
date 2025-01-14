@@ -14,7 +14,7 @@ namespace Laboration_3.Model
         public Question(string query, string correctAnswer, 
             string incorrectAnswer1, string incorrectAnswer2, string incorrectAnswer3, ObjectId id = new ObjectId())
         {
-            Id = ObjectId.GenerateNewId();
+            Id = id = ObjectId.GenerateNewId();
             Query = query;
             CorrectAnswer = correctAnswer;
             IncorrectAnswers = new string[3] {incorrectAnswer1, incorrectAnswer2, incorrectAnswer3 };

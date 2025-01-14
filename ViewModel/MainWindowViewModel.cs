@@ -12,8 +12,7 @@ namespace Laboration_3.ViewModel
         public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
-        public QuestionPackViewModel ActivePackCopy { get; set; }
-        public IMongoCollection<QuestionPackViewModel> QuestionCollection { get; set; }
+        public IMongoCollection<QuestionPack> QuestionCollection { get; set; }
 
 
         private bool _canExit;
@@ -139,7 +138,7 @@ namespace Laboration_3.ViewModel
             if (NewPack != null)
             {
                 Packs.Add(NewPack);
-                QuestionCollection.InsertOne(NewPack);
+                QuestionCollection.InsertOne(NewPack.model);
                 ActivePack = NewPack;
 
                 ConfigurationViewModel.DeleteQuestionCommand.RaiseCanExecuteChanged();
@@ -157,10 +156,14 @@ namespace Laboration_3.ViewModel
             Packs.Remove(ActivePack);
             DeletePackCommand.RaiseCanExecuteChanged();
 
+            var filter = Builders<QuestionPack>.Filter.Eq(q => q.Id, ActivePack.model.Id);
+            QuestionCollection.DeleteOne(filter);
+            
             if (Packs.Count > 0)
             {
                 ActivePack = Packs.FirstOrDefault();
             }
+            
             SaveToMongoDbAsync();
         }
 
@@ -190,13 +193,13 @@ namespace Laboration_3.ViewModel
             ExitGameRequested?.Invoke(this, CanExit);
         }
 
-        private IMongoCollection<QuestionPackViewModel> ConnectToLocalHost()
+        private IMongoCollection<QuestionPack> ConnectToLocalHost()
         {
             var connectionString = "mongodb://localhost:27017/";
 
             var client = new MongoClient(connectionString);
 
-            return client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPackViewModel>("QuestionPacks");
+            return client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPack>("QuestionPacks");
         }
 
         private void InitializeData()
@@ -205,7 +208,7 @@ namespace Laboration_3.ViewModel
 
             try
             {
-                var filter = Builders<QuestionPackViewModel>.Filter.Exists("_id", true);
+                var filter = Builders<QuestionPack>.Filter.Exists("_id", true);
 
                 var questionPacksExist = QuestionCollection.Find(filter).FirstOrDefault();
 
@@ -220,9 +223,13 @@ namespace Laboration_3.ViewModel
                     Packs.Add(ActivePack);
                 }
 
-                QuestionCollection.InsertMany(Packs);
+                foreach (var item in Packs)
+                {
+                    QuestionCollection.InsertOne(item.model);
+                }
+
+                //QuestionCollection.InsertMany(Packs);
                 
-                ActivePackCopy = GetQuestionPackViewModelCopy(ActivePack);
             }
             catch (Exception e)
             {
@@ -246,14 +253,10 @@ namespace Laboration_3.ViewModel
 
         public void SaveToMongoDbAsync()
         {   
-            if (ActivePack != null && !ActivePackCopy.Equals(ActivePack))
-            {
-                var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", ActivePack.Id);
+                var filter = Builders<QuestionPack>.Filter.Eq("_id", ActivePack.Id);
 
-                QuestionCollection.ReplaceOne(filter, ActivePack);
+                QuestionCollection.ReplaceOne(filter, ActivePack.model);
 
-                ActivePackCopy = GetQuestionPackViewModelCopy(ActivePack);
-            }
         }
 
         private void GetCollection()
@@ -262,7 +265,7 @@ namespace Laboration_3.ViewModel
 
             foreach (var pack in allQuestionPacks)
             {
-                Packs.Add(pack);
+                Packs.Add(new QuestionPackViewModel(pack));
             }            
         }
 
