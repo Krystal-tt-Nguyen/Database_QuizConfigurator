@@ -139,6 +139,7 @@ namespace Laboration_3.ViewModel
             if (NewPack != null)
             {
                 Packs.Add(NewPack);
+                QuestionCollection.InsertOne(NewPack);
                 ActivePack = NewPack;
 
                 ConfigurationViewModel.DeleteQuestionCommand.RaiseCanExecuteChanged();
