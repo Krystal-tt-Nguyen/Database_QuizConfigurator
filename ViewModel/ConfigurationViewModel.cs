@@ -1,5 +1,7 @@
-﻿using Laboration_3.Command;
+﻿using Database_QuizConfigurator.Model;
+using Laboration_3.Command;
 using Laboration_3.Model;
+using System.Collections.ObjectModel;
 
 namespace Laboration_3.ViewModel;
 
@@ -7,6 +9,7 @@ internal class ConfigurationViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? mainWindowViewModel;
     public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
+    public ObservableCollection<Category> Categories { get; set; }
 
 
     private bool _deleteQuestionIsEnable;
