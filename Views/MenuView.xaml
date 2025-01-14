@@ -45,7 +45,7 @@
                       InputGestureText="Alt+F4"/>
         </MenuItem>
 
-
+        <!-- TITTA HÄÄÄÄÄR -->
         <MenuItem Header="_Edit">
             <MenuItem Command="{Binding ConfigurationViewModel.AddQuestionCommand}"
                       Header="_Add Questions"
@@ -61,6 +61,10 @@
                       Header="Pack _Options"
                       Icon="{fa:Icon Sliders}"
                       InputGestureText="Ctrl+O"/>
+            <MenuItem Command="{Binding EditCategoriesCommand}"
+                      Header="Edit Categories"
+                      Icon="{fa:Icon Pen}"
+                      InputGestureText="Ctrl+K"/>
         </MenuItem>
 
 
