@@ -70,13 +70,13 @@ namespace Laboration_3.ViewModel
             this.model = model;
             this.Questions = new ObservableCollection<Question>(model.Questions);
         }
-        public QuestionPackViewModel(QuestionPackViewModel pack)
+        /*public QuestionPackViewModel(QuestionPackViewModel pack)
         {
-            Id = pack.Id;
             Name = pack.Name;
+            Id = pack.Id;
             Category = pack.Category;
             TimeLimitInSeconds = pack.TimeLimitInSeconds;
             Questions = pack.Questions;
-        }
+        }*/
     }
 }

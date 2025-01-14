@@ -108,7 +108,7 @@ namespace Laboration_3.ViewModel
             IsFullscreen = false;
 
             QuestionCollection = ConnectToLocalHost();
-            InitializeDataAsync();
+            InitializeData();
 
             ConfigurationViewModel = new ConfigurationViewModel(this);
             PlayerViewModel = new PlayerViewModel(this);
@@ -197,7 +197,7 @@ namespace Laboration_3.ViewModel
             return client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPackViewModel>("QuestionPacks");
         }
 
-        private async Task InitializeDataAsync()
+        private void InitializeData()
         {
             Packs = new ObservableCollection<QuestionPackViewModel>();
 
@@ -212,19 +212,24 @@ namespace Laboration_3.ViewModel
                 {
                     GetCollection();
                     ActivePack = Packs?.FirstOrDefault();
-                    ActivePacksCopy = new QuestionPackViewModel(ActivePack);
-
                 }
                 else
                 {
                     ActivePack = new QuestionPackViewModel(new QuestionPack("Default Question Pack"));
                     Packs.Add(ActivePack);
                 }
+                QuestionCollection.InsertMany(Packs);
+                ActivePacksCopy = MakeQuestionPackViewModelCopy(ActivePack);
             }
             catch (Exception e)
             {
                 Debug.WriteLine($"{e.Message}");
             }
+        }
+
+        public QuestionPackViewModel MakeQuestionPackViewModelCopy(QuestionPackViewModel model)
+        {
+            return new QuestionPackViewModel(new QuestionPack(model.Name, model.Category, model.Difficulty, model.TimeLimitInSeconds, model.Id));
         }
 
         public void SaveToMongoDbAsync()
@@ -247,13 +252,13 @@ namespace Laboration_3.ViewModel
             //    }
             //}
 
-            if (!ActivePacksCopy.Equals(ActivePack) && ActivePack is not null)
+            if (ActivePack is not null && !ActivePacksCopy.Equals(ActivePack))
             {
                 var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", ActivePack.Id);
 
                 QuestionCollection.ReplaceOne(filter, ActivePack);
 
-                ActivePacksCopy = new QuestionPackViewModel(ActivePack);                
+                ActivePacksCopy = MakeQuestionPackViewModelCopy(ActivePack);
             }
         }
 
@@ -264,8 +269,7 @@ namespace Laboration_3.ViewModel
             foreach (var pack in allQuestionPacks)
             {
                 Packs.Add(pack);
-            }
-            
+            }            
         }
 
         private void SaveOnShortcut(object? obj) => SaveToMongoDbAsync();
