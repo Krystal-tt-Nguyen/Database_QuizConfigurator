@@ -12,7 +12,7 @@ namespace Laboration_3.ViewModel
         public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
-        public IMongoCollection<QuestionPack> QuestionCollection { get; set; }
+        private IMongoCollection<QuestionPack> QuestionCollection { get; set; }
 
 
         private bool _canExit;
@@ -107,7 +107,7 @@ namespace Laboration_3.ViewModel
             DeletePackIsEnable = true;
             IsFullscreen = false;
 
-            QuestionCollection = ConnectToLocalHost();
+            ConnectToLocalHost();
             InitializeData();
 
             ConfigurationViewModel = new ConfigurationViewModel(this);
@@ -123,6 +123,7 @@ namespace Laboration_3.ViewModel
             SelectActivePackCommand = new DelegateCommand(SelectActivePack);
             ToggleWindowFullScreenCommand = new DelegateCommand(ToggleWindowFullScreen);
             ExitGameCommand = new DelegateCommand(ExitGame);
+
         }
 
         private void OpenPackDialog(object? obj) 
@@ -193,13 +194,13 @@ namespace Laboration_3.ViewModel
             ExitGameRequested?.Invoke(this, CanExit);
         }
 
-        private IMongoCollection<QuestionPack> ConnectToLocalHost()
+        private void ConnectToLocalHost()
         {
             var connectionString = "mongodb://localhost:27017/";
 
             var client = new MongoClient(connectionString);
 
-            return client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPack>("QuestionPacks");
+            QuestionCollection = client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPack>("QuestionPacks");
         }
 
         private void InitializeData()
@@ -226,37 +227,19 @@ namespace Laboration_3.ViewModel
                 foreach (var item in Packs)
                 {
                     QuestionCollection.InsertOne(item.model);
-                }
-
-                //QuestionCollection.InsertMany(Packs);
-                
+                }                
             }
             catch (Exception e)
             {
                 Debug.WriteLine($"{e.Message}");
             }
         }
-
-        public QuestionPackViewModel GetQuestionPackViewModelCopy(QuestionPackViewModel model)
-        {
-            var copy = new QuestionPackViewModel(new QuestionPack());
-
-            copy.Id = model.Id;
-            copy.Name = model.Name;
-            copy.Category = model.Category;
-            copy.Difficulty = model.Difficulty;
-            copy.TimeLimitInSeconds = model.TimeLimitInSeconds;
-            copy.Questions = model.Questions;
-            
-            return copy;
-        }
-
+    
         public void SaveToMongoDbAsync()
         {   
-                var filter = Builders<QuestionPack>.Filter.Eq("_id", ActivePack.Id);
+            var filter = Builders<QuestionPack>.Filter.Eq("_id", ActivePack.Id);
 
-                QuestionCollection.ReplaceOne(filter, ActivePack.model);
-
+            QuestionCollection.ReplaceOne(filter, ActivePack.model);
         }
 
         private void GetCollection()

@@ -58,7 +58,6 @@ namespace Laboration_3.ViewModel
             }
         }
 
-
         public ObservableCollection<Question> Questions  
         {
             get => model.Questions;

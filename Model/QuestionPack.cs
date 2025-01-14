@@ -24,5 +24,4 @@ internal class QuestionPack
         TimeLimitInSeconds = timeLimitInSeconds;
         Questions = new ObservableCollection<Question>();
     }
-
 }
