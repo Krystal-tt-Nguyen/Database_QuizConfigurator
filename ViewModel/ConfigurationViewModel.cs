@@ -7,8 +7,7 @@ namespace Laboration_3.ViewModel
     {
         private readonly MainWindowViewModel? mainWindowViewModel;
         public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
-        // private string FilePath { get => mainWindowViewModel.FilePath; }
-
+        
 
         private bool _deleteQuestionIsEnable;
         public bool DeleteQuestionIsEnable

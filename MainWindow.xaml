@@ -16,6 +16,7 @@
         <BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
     </Window.Resources>
 
+    <!-- TITTA HÄÄÄÄÄR -->
     <Window.InputBindings>
         <KeyBinding Key="Insert"
                     Command="{Binding ConfigurationViewModel.AddQuestionCommand}"/>
@@ -36,6 +37,9 @@
         <KeyBinding Key="S"
                     Modifiers="Ctrl"
                     Command="{Binding SaveOnShortcutCommand}"/>
+        <KeyBinding Key="K"
+                    Modifiers="Ctrl"
+                    Command="{Binding EditCategoriesCommand}"/>
     </Window.InputBindings>
 
     <Grid Background="MintCream">
