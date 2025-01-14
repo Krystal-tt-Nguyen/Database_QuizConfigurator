@@ -1,9 +1,8 @@
 ﻿using Laboration_3.Command;
 using Laboration_3.Model;
+using MongoDB.Driver;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Text.Json;
-using Path = System.IO.Path;
+using System.Diagnostics;
 
 namespace Laboration_3.ViewModel
 {
@@ -12,7 +11,8 @@ namespace Laboration_3.ViewModel
         public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
-        public string FilePath { get; set; }
+        public QuestionPackViewModel ActivePacksCopy { get; set; }
+        public IMongoCollection<QuestionPackViewModel> QuestionCollection { get; set; }
 
 
         private bool _canExit;
@@ -107,7 +107,7 @@ namespace Laboration_3.ViewModel
             DeletePackIsEnable = true;
             IsFullscreen = false;
 
-            FilePath = GetFilePath();
+            QuestionCollection = ConnectToLocalHost();
             InitializeDataAsync();
 
             ConfigurationViewModel = new ConfigurationViewModel(this);
@@ -142,7 +142,7 @@ namespace Laboration_3.ViewModel
 
                 ConfigurationViewModel.DeleteQuestionCommand.RaiseCanExecuteChanged();
                 DeletePackCommand.RaiseCanExecuteChanged();
-                SaveToJsonAsync();
+                SaveToMongoDbAsync();
             }
 
             CloseDialogRequested.Invoke(this, EventArgs.Empty);
@@ -159,7 +159,7 @@ namespace Laboration_3.ViewModel
             {
                 ActivePack = Packs.FirstOrDefault();
             }
-            SaveToJsonAsync();
+            SaveToMongoDbAsync();
         }
 
         private bool IsDeletePackEnable(object? obj) => Packs != null && Packs.Count > 1;
@@ -170,7 +170,7 @@ namespace Laboration_3.ViewModel
             {
                 SelectedPack = selectedPack;
                 ActivePack = SelectedPack;
-                SaveToJsonAsync();
+                SaveToMongoDbAsync();
             }
         }
 
@@ -180,68 +180,95 @@ namespace Laboration_3.ViewModel
             ToggleFullScreenRequested?.Invoke(this, _isFullscreen);
         }
 
-        private async void ExitGame(object? obj)
+        private void ExitGame(object? obj)
         {
-            await SaveToJsonAsync();
+            SaveToMongoDbAsync();
 
             CanExit = true;
             ExitGameRequested?.Invoke(this, CanExit);
         }
 
-        private string GetFilePath()
+        private IMongoCollection<QuestionPackViewModel> ConnectToLocalHost()
         {
-            string appDataFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string directoryFilePath = Path.Combine(appDataFilePath, "Laboration_3");
+            var connectionString = "mongodb://localhost:27017/";
 
-            if (!Directory.Exists(directoryFilePath))
-            {
-                Directory.CreateDirectory(directoryFilePath);
-            }
+            var client = new MongoClient(connectionString);
 
-            string filePath = Path.Combine(directoryFilePath, "Laboration_3.json");
-            return filePath;
+            return client.GetDatabase("Krystal_Lovisa").GetCollection<QuestionPackViewModel>("QuestionPacks");
         }
 
         private async Task InitializeDataAsync()
         {
             Packs = new ObservableCollection<QuestionPackViewModel>();
 
-            if (Path.Exists(FilePath))
+            var filter = Builders<QuestionPackViewModel>.Filter.Exists("_id", true);
+            
+            var questionPacksExist = QuestionCollection.Find(filter).FirstOrDefault();
+
+
+            try
             {
-                await ReadFromJsonAsync();
-                ActivePack = Packs?.FirstOrDefault();
+                if (questionPacksExist is not null)
+                {
+                    GetCollection();
+                    ActivePack = Packs?.FirstOrDefault();
+                    ActivePacksCopy = new QuestionPackViewModel(ActivePack);
+
+                }
+                else
+                {
+                    ActivePack = new QuestionPackViewModel(new QuestionPack("Default Question Pack"));
+                    Packs.Add(ActivePack);
+                }
             }
-            else
+            catch (Exception e)
             {
-                ActivePack = new QuestionPackViewModel(new QuestionPack("Default Question Pack"));
-                Packs.Add(ActivePack);
+                Debug.WriteLine($"{e.Message}");
             }
         }
 
-        public async Task SaveToJsonAsync()
+        public void SaveToMongoDbAsync()
         {
-            var options = new JsonSerializerOptions()
+            //if (!ActivePacksCopy.Equals(ActivePack))
+            //{
+            //    foreach (var question in ActivePack.Questions)
+            //    {
+            //        var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", question.Id);
+            //        var replacement = Builders<QuestionPackViewModel>.SetFields
+
+            //        QuestionCollection.FindOneAndReplaceAsync(filter, );
+
+            //        var toRemove = ActivePacksCopy.Questions.FirstOrDefault(q => q.Id == question.Id);
+            //        ActivePacksCopy.Questions.Remove(toRemove);
+
+            //        var toAdd = ActivePack.Questions.FirstOrDefault(q => q.Id == question.Id);
+            //        ActivePacksCopy.Questions.Add(question);
+
+            //    }
+            //}
+
+            if (!ActivePacksCopy.Equals(ActivePack) && ActivePack is not null)
             {
-                IncludeFields = true,
-                IgnoreReadOnlyProperties = false,
-            };
+                var filter = Builders<QuestionPackViewModel>.Filter.Eq("_id", ActivePack.Id);
 
-            string jsonString = JsonSerializer.Serialize(Packs, options);
-            await File.WriteAllTextAsync(FilePath, jsonString);
-        }
+                QuestionCollection.ReplaceOne(filter, ActivePack);
 
-        private async Task ReadFromJsonAsync()
-        {
-            string jsonString = await File.ReadAllTextAsync(FilePath);
-            var questionPack = JsonSerializer.Deserialize<QuestionPack[]>(jsonString);
-
-            foreach (var pack in questionPack)
-            {
-                Packs.Add(new QuestionPackViewModel(pack));
+                ActivePacksCopy = new QuestionPackViewModel(ActivePack);                
             }
         }
 
-        private void SaveOnShortcut(object? obj) => SaveToJsonAsync();
+        private void GetCollection()
+        {
+            var allQuestionPacks = QuestionCollection.Find(q => true).ToList();
+
+            foreach (var pack in allQuestionPacks)
+            {
+                Packs.Add(pack);
+            }
+            
+        }
+
+        private void SaveOnShortcut(object? obj) => SaveToMongoDbAsync();
 
     }
 }

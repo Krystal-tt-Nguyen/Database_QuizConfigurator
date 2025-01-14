@@ -1,21 +1,35 @@
 ﻿
-namespace Laboration_3.Model
+using MongoDB.Bson;
+
+namespace Laboration_3.Model;
+
+enum Difficulty { Easy, Medium, Hard }
+
+internal class QuestionPack
 {
-    enum Difficulty { Easy, Medium, Hard }
+    public ObjectId Id { get; set; }
+    public string Name { get; set; }
+    public Difficulty Difficulty { get; set; }
+    public int TimeLimitInSeconds { get; set; }
+    public List<Question> Questions { get; set; }
+    public string? Category { get; set; }
 
-    internal class QuestionPack
+    public QuestionPack(string name = "<PackName>", string? category = null, Difficulty difficulty = Difficulty.Medium, int timeLimitInSeconds = 30)
     {
-        public string Name { get; set; }
-        public Difficulty Difficulty { get; set; }
-        public int TimeLimitInSeconds { get; set; }
-        public List<Question> Questions { get; set; }
-
-        public QuestionPack(string name = "<PackName>", Difficulty difficulty = Difficulty.Medium, int timeLimitInSeconds = 30)
-        {
-            Name = name;
-            Difficulty = difficulty;
-            TimeLimitInSeconds = timeLimitInSeconds;
-            Questions = new List<Question>();
-        }
+        Id = new ObjectId();
+        Name = name;
+        Category = category;
+        Difficulty = difficulty;
+        TimeLimitInSeconds = timeLimitInSeconds;
+        Questions = new List<Question>();
     }
+
+   /* public QuestionPack(QuestionPack pack)
+    {
+        Id = pack.Id;
+        Name = pack.Name;
+        Category = pack.Category;
+        TimeLimitInSeconds = pack.TimeLimitInSeconds;
+        Questions = pack.Questions;
+    }*/
 }

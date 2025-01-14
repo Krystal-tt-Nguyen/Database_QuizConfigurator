@@ -7,7 +7,6 @@ namespace Laboration_3.ViewModel
     {
         private readonly MainWindowViewModel? mainWindowViewModel;
         public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
-        // private string FilePath { get => mainWindowViewModel.FilePath; }
 
 
         private bool _deleteQuestionIsEnable;
@@ -31,7 +30,6 @@ namespace Laboration_3.ViewModel
                 RaisePropertyChanged();
             }
         }
-
 
         private Question? _selectedQuestion;
         public Question? SelectedQuestion
@@ -92,7 +90,7 @@ namespace Laboration_3.ViewModel
 
             UpdateCommandStates();
             ChangeTextVisibility();
-            mainWindowViewModel.SaveToJsonAsync();
+            mainWindowViewModel.SaveToMongoDbAsync();
         }
 
         private bool IsAddQuestionEnable(object? obj) => IsConfigurationModeVisible;
@@ -102,7 +100,7 @@ namespace Laboration_3.ViewModel
             ActivePack?.Questions.Remove(SelectedQuestion);
             UpdateCommandStates();
             ChangeTextVisibility();
-            mainWindowViewModel.SaveToJsonAsync();
+            mainWindowViewModel.SaveToMongoDbAsync();
         }
 
         private bool IsDeleteQuestionEnable(object? obj)
@@ -111,7 +109,7 @@ namespace Laboration_3.ViewModel
         private void EditPackOptions(object? obj)  
         {
             EditPackOptionsRequested.Invoke(this, EventArgs.Empty);
-            mainWindowViewModel.SaveToJsonAsync();
+            mainWindowViewModel.SaveToMongoDbAsync();
         } 
 
         private bool IsEditPackOptionsEnable(object? obj) => IsConfigurationModeVisible;
