@@ -7,4 +7,10 @@ class Category
     public ObjectId Id { get; set; }
 
     public string Name { get; set; }
+
+    public Category(string name)
+    {
+        Name = name;
+        Id = ObjectId.GenerateNewId();
+    }
 }

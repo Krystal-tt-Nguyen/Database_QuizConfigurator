@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Laboration_3.Dialogs" 
         xmlns:converters="clr-namespace:Laboration_3.Converters"
+        DataContext="{Binding ConfigurationViewModel}"
         mc:Ignorable="d"
         Title="Pack Options" 
         Height="270" Width="180"

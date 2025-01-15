@@ -11,6 +11,29 @@ internal class ConfigurationViewModel : ViewModelBase
     public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
     public ObservableCollection<Category> Categories { get; set; }
 
+    private Category selectedCategory;
+
+    public Category SelectedCategory
+    {
+        get => selectedCategory; 
+        set 
+        { 
+            selectedCategory = value;
+            RaisePropertyChanged();
+        }
+    }
+    private string categoryName;
+
+    public string CategoryName
+    {
+        get => categoryName; 
+        set 
+        {
+            categoryName = value;
+            RaisePropertyChanged();
+        }
+    }
+
 
     private bool _deleteQuestionIsEnable;
     public bool DeleteQuestionIsEnable
@@ -65,7 +88,8 @@ internal class ConfigurationViewModel : ViewModelBase
     public DelegateCommand DeleteQuestionCommand { get; }
     public DelegateCommand EditPackOptionsCommand { get; }
     public DelegateCommand SwitchToConfigurationModeCommand { get; }
-
+    public DelegateCommand AddCategoryCommand { get; }
+    public DelegateCommand DeleteCategoryCommand { get; }
 
     public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel)
     {
@@ -78,9 +102,29 @@ internal class ConfigurationViewModel : ViewModelBase
         DeleteQuestionCommand = new DelegateCommand(DeleteQuestion, IsDeleteQuestionEnable);
         EditPackOptionsCommand = new DelegateCommand(EditPackOptions, IsEditPackOptionsEnable);
         SwitchToConfigurationModeCommand = new DelegateCommand(StartConfigurationMode, IsStartConfigurationModeEnable);
+        AddCategoryCommand = new DelegateCommand(AddCategory);
+        DeleteCategoryCommand = new DelegateCommand(DeleteCategory, DeleteCategoryActive);
 
         SelectedQuestion = ActivePack?.Questions.FirstOrDefault();
         TextVisibility = ActivePack?.Questions.Count > 0;
+    }
+
+    private bool DeleteCategoryActive(object? arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void DeleteCategory(object obj)
+    {
+        Categories.Remove(selectedCategory);
+        //Lägg till databas
+    }
+
+    private void AddCategory(object obj)
+    {
+        Categories.Add(new Category(CategoryName));
+        CategoryName = string.Empty;
+        //Lägg till databas
     }
 
     private void AddQuestion(object? obj) 
