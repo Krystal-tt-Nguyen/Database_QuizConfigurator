@@ -1,4 +1,5 @@
 ﻿
+using Database_QuizConfigurator.Model;
 using MongoDB.Bson;
 using System.Collections.ObjectModel;
 
@@ -13,9 +14,9 @@ internal class QuestionPack
     public Difficulty Difficulty { get; set; }
     public int TimeLimitInSeconds { get; set; }
     public ObservableCollection<Question> Questions { get; set; }
-    public string? Category { get; set; }
+    public Category? Category { get; set; }
 
-    public QuestionPack(string name = "<PackName>", string? category = null, Difficulty difficulty = Difficulty.Medium, int timeLimitInSeconds = 30, ObjectId id = new ObjectId())
+    public QuestionPack(string name = "<PackName>", Category? category = null, Difficulty difficulty = Difficulty.Medium, int timeLimitInSeconds = 30, ObjectId id = new ObjectId())
     {
         Id = id = ObjectId.GenerateNewId();
         Name = name;

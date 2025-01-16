@@ -1,5 +1,7 @@
-﻿using Laboration_3.Dialogs;
+﻿using Database_QuizConfigurator.Dialogs;
+using Laboration_3.Dialogs;
 using Laboration_3.ViewModel;
+using System.Configuration;
 using System.Windows;
 
 namespace Laboration_3
@@ -21,6 +23,24 @@ namespace Laboration_3
             mainWindowViewModel.ExitGameRequested += OnExitRequested;
             mainWindowViewModel.OpenNewPackDialogRequested += OnShowPackDialogRequested;
             mainWindowViewModel.ToggleFullScreenRequested += OnToggleFullScreenRequested;
+            mainWindowViewModel.ConfigurationViewModel.EditCategoriesRequested += EditCategoriesRequested;
+        }
+
+        private void EditCategoriesRequested(object? sender, EventArgs e)
+        {
+            var dialog = new AddCategories();
+            
+            try
+            {
+                dialog.DataContext = mainWindowViewModel.ConfigurationViewModel;
+                dialog.Owner = Application.Current.MainWindow;
+                _currentDialog = dialog;
+                dialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while opening the dialog box: {ex.Message}");
+            }
         }
 
         public void OnDeletePackRequested(object? sender, EventArgs args)
@@ -96,7 +116,7 @@ namespace Laboration_3
             {
                 MessageBox.Show($"An error occurred while opening the dialog box: {ex.Message}");
             }
-        }
+        }        
 
     }
 }

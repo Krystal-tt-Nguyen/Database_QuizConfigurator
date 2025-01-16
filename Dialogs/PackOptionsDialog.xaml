@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Laboration_3.Dialogs" 
-        xmlns:converters="clr-namespace:Laboration_3.Converters"
+        xmlns:converters="clr-namespace:Laboration_3.Converters" xmlns:viewmodel="clr-namespace:Laboration_3.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         DataContext="{Binding ConfigurationViewModel}"
         mc:Ignorable="d"
         Title="Pack Options" 
@@ -55,8 +55,9 @@
         <ComboBox Grid.Row="2" 
                 Height="20" 
                 Margin="10 10 10 0"
-                SelectedIndex="{Binding ActivePack.Categories}">
-            <ComboBoxItem Content="TEST 1, 2, 3"/>
+                SelectedItem="{Binding ActivePack.Category}"
+                ItemsSource="{Binding ConfigurationViewModel.Categories}"
+                DisplayMemberPath="Name">
 
         </ComboBox>
         

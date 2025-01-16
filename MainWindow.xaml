@@ -39,7 +39,7 @@
                     Command="{Binding SaveOnShortcutCommand}"/>
         <KeyBinding Key="K"
                     Modifiers="Ctrl"
-                    Command="{Binding EditCategoriesCommand}"/>
+                    Command="{Binding ConfigurationViewModel.EditCategoriesCommand}"/>
     </Window.InputBindings>
 
     <Grid Background="MintCream">

@@ -1,7 +1,9 @@
 ﻿using Database_QuizConfigurator.Model;
 using Laboration_3.Command;
 using Laboration_3.Model;
+using MongoDB.Driver;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Laboration_3.ViewModel;
 
@@ -9,6 +11,8 @@ internal class ConfigurationViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? mainWindowViewModel;
     public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
+    private IMongoCollection<Category> CategoryCollection { get; set; }
+
     public ObservableCollection<Category> Categories { get; set; }
 
     private Category selectedCategory;
@@ -19,6 +23,7 @@ internal class ConfigurationViewModel : ViewModelBase
         set 
         { 
             selectedCategory = value;
+            DeleteCategoryCommand.RaiseCanExecuteChanged();
             RaisePropertyChanged();
         }
     }
@@ -33,7 +38,6 @@ internal class ConfigurationViewModel : ViewModelBase
             RaisePropertyChanged();
         }
     }
-
 
     private bool _deleteQuestionIsEnable;
     public bool DeleteQuestionIsEnable
@@ -82,7 +86,8 @@ internal class ConfigurationViewModel : ViewModelBase
     }
 
 
-    public event EventHandler EditPackOptionsRequested; 
+    public event EventHandler EditPackOptionsRequested;
+    public event EventHandler EditCategoriesRequested;
     
     public DelegateCommand AddQuestionCommand { get; }
     public DelegateCommand DeleteQuestionCommand { get; }
@@ -90,6 +95,7 @@ internal class ConfigurationViewModel : ViewModelBase
     public DelegateCommand SwitchToConfigurationModeCommand { get; }
     public DelegateCommand AddCategoryCommand { get; }
     public DelegateCommand DeleteCategoryCommand { get; }
+    public DelegateCommand EditCategoriesCommand { get; }
 
     public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel)
     {
@@ -104,27 +110,52 @@ internal class ConfigurationViewModel : ViewModelBase
         SwitchToConfigurationModeCommand = new DelegateCommand(StartConfigurationMode, IsStartConfigurationModeEnable);
         AddCategoryCommand = new DelegateCommand(AddCategory);
         DeleteCategoryCommand = new DelegateCommand(DeleteCategory, DeleteCategoryActive);
+        EditCategoriesCommand = new DelegateCommand(EditCategories);
 
         SelectedQuestion = ActivePack?.Questions.FirstOrDefault();
         TextVisibility = ActivePack?.Questions.Count > 0;
+
+        Categories = new ObservableCollection<Category>(); 
+        ConnectForCategory();
+
+        var allCategories = CategoryCollection.Find(c => true).ToList();
+        foreach (var category in allCategories)
+        {
+            Categories.Add(category);
+        }
+    }
+
+    private void EditCategories(object obj)
+    {
+        EditCategoriesRequested.Invoke(this, EventArgs.Empty);
     }
 
     private bool DeleteCategoryActive(object? arg)
     {
-        throw new NotImplementedException();
+        if (selectedCategory is not null) return true;
+        return false;
     }
 
     private void DeleteCategory(object obj)
     {
-        Categories.Remove(selectedCategory);
-        //Lägg till databas
+        try
+        {
+            var filter = Builders<Category>.Filter.Eq(c => c.Id, SelectedCategory.Id);
+            CategoryCollection.DeleteOne(filter);
+            Categories.Remove(selectedCategory);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"{e}");
+        }
     }
 
     private void AddCategory(object obj)
     {
-        Categories.Add(new Category(CategoryName));
+        var newCategory = new Category(CategoryName);
+        Categories.Add(newCategory);
         CategoryName = string.Empty;
-        //Lägg till databas
+        CategoryCollection.InsertOne(newCategory);
     }
 
     private void AddQuestion(object? obj) 
@@ -182,6 +213,15 @@ internal class ConfigurationViewModel : ViewModelBase
         DeleteQuestionCommand.RaiseCanExecuteChanged();
         EditPackOptionsCommand.RaiseCanExecuteChanged();
         mainWindowViewModel.PlayerViewModel.SwitchToPlayModeCommand.RaiseCanExecuteChanged();
+    }
+
+    private void ConnectForCategory()
+    {
+        var connectionString = "mongodb://localhost:27017/";
+
+        var client = new MongoClient(connectionString);
+
+        CategoryCollection = client.GetDatabase("Krystal_Lovisa").GetCollection<Category>("Categories");
     }
 
 }

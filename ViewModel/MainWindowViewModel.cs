@@ -107,7 +107,7 @@ namespace Laboration_3.ViewModel
             DeletePackIsEnable = true;
             IsFullscreen = false;
 
-            ConnectToLocalHost();
+            ConnectForQuestionPack();
             InitializeData();
 
             ConfigurationViewModel = new ConfigurationViewModel(this);
@@ -194,7 +194,7 @@ namespace Laboration_3.ViewModel
             ExitGameRequested?.Invoke(this, CanExit);
         }
 
-        private void ConnectToLocalHost()
+        private void ConnectForQuestionPack()
         {
             var connectionString = "mongodb://localhost:27017/";
 

@@ -46,7 +46,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}" 
+                        <TextBlock Text="{Binding Path=Name}" 
                            FontWeight="Regular"
                            FontSize="10"
                            Margin="0 5 0 0"/>
@@ -76,7 +76,8 @@
                    FontSize="10"
                    Margin="5 0 0 0"/>
 
-            <TextBox Text ="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            <TextBox x:Name="tb"
+                     Text ="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      Height="25"
                      Margin="10 0 10 10"
                      Padding="2 5 2 5"/>

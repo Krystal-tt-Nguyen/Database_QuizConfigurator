@@ -1,4 +1,5 @@
-﻿using Laboration_3.Model;
+﻿using Database_QuizConfigurator.Model;
+using Laboration_3.Model;
 using MongoDB.Bson;
 using System.Collections.ObjectModel;
 
@@ -38,7 +39,7 @@ namespace Laboration_3.ViewModel
             }
         }
 
-        public string? Category
+        public Category? Category
         {
             get => model.Category;
             set 

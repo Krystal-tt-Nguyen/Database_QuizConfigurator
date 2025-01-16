@@ -61,7 +61,7 @@
                       Header="Pack _Options"
                       Icon="{fa:Icon Sliders}"
                       InputGestureText="Ctrl+O"/>
-            <MenuItem Command="{Binding EditCategoriesCommand}"
+            <MenuItem Command="{Binding ConfigurationViewModel.EditCategoriesCommand}"
                       Header="Edit Categories"
                       Icon="{fa:Icon Pen}"
                       InputGestureText="Ctrl+K"/>
