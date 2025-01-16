@@ -79,7 +79,7 @@ namespace Laboration_3
 
         public void OnShowOptionsDialogRequested(object? sender, EventArgs args)
         {
-            var dialog = new PackOptionsDialog();
+            var dialog = new PackOptionsDialog();           
             ShowDialog(dialog);
         }
 

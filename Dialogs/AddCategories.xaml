@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodel:ConfigurationViewModel}"
         DataContext="{Binding ConfigurationViewModel}"
         mc:Ignorable="d"
-        Title="Edit Categories" 
+        Title="Manage Categories" 
         Height="220" Width="300"
         ResizeMode="NoResize"
         WindowStyle="SingleBorderWindow"
@@ -27,7 +27,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!--CATEGORY LIST-->
         <Label Content="Manage Categories" 
                FontSize="12" 
                FontWeight="Bold"
@@ -54,49 +53,44 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+         
+        <Label Content="Category Name" 
+                FontWeight="Regular" 
+                FontStyle="Oblique"
+                FontSize="10"
+                VerticalAlignment="Bottom"
+                Grid.Column="1" 
+                Grid.Row="0"
+                Margin="5 0 0 0"/>
 
-        
-        <!--SELECTED CATEGORY DETAILS-->
-        <Label Content="Edit selected category" 
-            FontSize="12" 
-            FontStyle="Oblique"                
-            FontWeight="Regular"
-            Grid.Column="1" 
-            Grid.Row="0" 
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            Margin="5 0 0 0">
-        </Label>
+        <TextBox x:Name="tb"
+                    Text ="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Grid.Column="1" 
+                    Grid.Row="1"
+                    VerticalAlignment="Top"
+                    Height="25"
+                    Margin="10 0 10 10"
+                    Padding="2 5 2 5"/>
 
-        <StackPanel Grid.Column="1" 
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Grid.Column="1" 
                     Grid.Row="1">
-            
-            <Label Content="Category Name" 
-                   FontWeight="Bold" 
-                   FontSize="10"
-                   Margin="5 0 0 0"/>
-
-            <TextBox x:Name="tb"
-                     Text ="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                     Height="25"
-                     Margin="10 0 10 10"
-                     Padding="2 5 2 5"/>
-
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Button Command ="{Binding AddCategoryCommand}" 
-                        Content="Add"
-                        FontSize="10"
-                        Margin="0 15 5 0" 
-                        Padding="10 0 10 0"/>
-                <Button Command ="{Binding DeleteCategoryCommand}"
-                        Content="Delete"
-                        FontSize="10"
-                        Margin="5 15 10 0" 
-                        Padding="10 0 10 0"/>
-            </StackPanel>
-
+            <Button Command ="{Binding AddCategoryCommand}" 
+                    Content="Add"
+                    FontSize="10"
+                    Height="20"
+                    Margin="0 40 5 0" 
+                    Padding="10 0 10 0"/>
+            <Button Command ="{Binding DeleteCategoryCommand}"
+                    Content="Delete"
+                    FontSize="10"
+                    Height="20"
+                    Margin="5 40 10 0" 
+                    Padding="10 0 10 0"/>
         </StackPanel>
+
     </Grid>
 
 </Window>
