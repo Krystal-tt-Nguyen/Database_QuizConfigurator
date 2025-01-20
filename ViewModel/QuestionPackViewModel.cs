@@ -72,7 +72,6 @@ namespace Laboration_3.ViewModel
         public QuestionPackViewModel(QuestionPack model)
         {
             this.model = model;
-            //this.Questions = new ObservableCollection<Question>(model.Questions);
         }
 
     }

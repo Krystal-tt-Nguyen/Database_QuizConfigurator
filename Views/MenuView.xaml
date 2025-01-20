@@ -46,7 +46,6 @@
                       InputGestureText="Alt+F4"/>
         </MenuItem>
 
-        <!-- TITTA HÄÄÄÄÄR -->
         <MenuItem Header="_Edit">
             <MenuItem Command="{Binding ConfigurationViewModel.AddQuestionCommand}"
                       Header="_Add Questions"

@@ -16,7 +16,6 @@
         <BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
     </Window.Resources>
 
-    <!-- TITTA HÄÄÄÄÄR -->
     <Window.InputBindings>
         <KeyBinding Key="Insert"
                     Command="{Binding ConfigurationViewModel.AddQuestionCommand}"/>
