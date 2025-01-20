@@ -15,6 +15,18 @@ internal class ConfigurationViewModel : ViewModelBase
 
     public ObservableCollection<Category> Categories { get; set; }
 
+    //private Category category;
+
+    public Category? Category
+    {
+        get => Categories.FirstOrDefault(c => c.Id == ActivePack?.Category?.Id);
+        set
+        {
+            ActivePack.Category = value;
+            RaisePropertyChanged();
+        }
+    }
+
     private Category selectedCategory;
 
     public Category SelectedCategory

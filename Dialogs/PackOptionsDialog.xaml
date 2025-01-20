@@ -55,7 +55,7 @@
         <ComboBox Grid.Row="2" 
                 Height="20" 
                 Margin="10 10 10 0"
-                SelectedItem="{Binding ActivePack.Category}"
+                SelectedItem="{Binding ConfigurationViewModel.Category}"
                 ItemsSource="{Binding ConfigurationViewModel.Categories}"
                 DisplayMemberPath="Name">
 
