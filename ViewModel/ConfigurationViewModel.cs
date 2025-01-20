@@ -113,13 +113,13 @@ internal class ConfigurationViewModel : ViewModelBase
         DeleteQuestionIsEnable = false;
         IsConfigurationModeVisible = true;
         
-        AddQuestionCommand = new DelegateCommand(AddQuestion, IsAddQuestionEnable); 
+        AddQuestionCommand = new DelegateCommand(AddQuestion, IsEnable); 
         DeleteQuestionCommand = new DelegateCommand(DeleteQuestion, IsDeleteQuestionEnable);
-        EditPackOptionsCommand = new DelegateCommand(EditPackOptions, IsEditPackOptionsEnable);
+        EditPackOptionsCommand = new DelegateCommand(EditPackOptions, IsEnable);
         SwitchToConfigurationModeCommand = new DelegateCommand(StartConfigurationMode, IsStartConfigurationModeEnable);
         AddCategoryCommand = new DelegateCommand(AddCategory);
         DeleteCategoryCommand = new DelegateCommand(DeleteCategory, DeleteCategoryActive);
-        EditCategoriesCommand = new DelegateCommand(EditCategories);
+        EditCategoriesCommand = new DelegateCommand(EditCategories, IsEnable);
 
         SelectedQuestion = ActivePack?.Questions.FirstOrDefault();
         TextVisibility = ActivePack?.Questions.Count > 0;
@@ -208,7 +208,7 @@ internal class ConfigurationViewModel : ViewModelBase
         mainWindowViewModel.SaveToMongoDb();
     }
 
-    private bool IsAddQuestionEnable(object? obj) => IsConfigurationModeVisible;
+    private bool IsEnable(object? obj) => IsConfigurationModeVisible;
 
     private void DeleteQuestion(object? obj)
     { 
@@ -227,8 +227,6 @@ internal class ConfigurationViewModel : ViewModelBase
         mainWindowViewModel.SaveToMongoDb();
     } 
 
-    private bool IsEditPackOptionsEnable(object? obj) => IsConfigurationModeVisible;
-
     private void ChangeTextVisibility() 
         => TextVisibility = ActivePack?.Questions.Count > 0 && SelectedQuestion != null;
 
@@ -246,6 +244,7 @@ internal class ConfigurationViewModel : ViewModelBase
 
     private void UpdateCommandStates()
     {
+        EditCategoriesCommand.RaiseCanExecuteChanged();
         AddQuestionCommand.RaiseCanExecuteChanged();
         AddCategoryCommand.RaiseCanExecuteChanged();
         DeleteQuestionCommand.RaiseCanExecuteChanged();
