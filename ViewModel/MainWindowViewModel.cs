@@ -144,7 +144,7 @@ namespace Laboration_3.ViewModel
 
                 ConfigurationViewModel.DeleteQuestionCommand.RaiseCanExecuteChanged();
                 DeletePackCommand.RaiseCanExecuteChanged();
-                SaveToMongoDbAsync();
+                SaveToMongoDb();
             }
 
             CloseDialogRequested.Invoke(this, EventArgs.Empty);
@@ -165,7 +165,7 @@ namespace Laboration_3.ViewModel
                 ActivePack = Packs.FirstOrDefault();
             }
             
-            SaveToMongoDbAsync();
+            SaveToMongoDb();
         }
 
         private bool IsDeletePackEnable(object? obj) => Packs != null && Packs.Count > 1;
@@ -176,7 +176,7 @@ namespace Laboration_3.ViewModel
             {
                 SelectedPack = selectedPack;
                 ActivePack = SelectedPack;
-                SaveToMongoDbAsync();
+                SaveToMongoDb();
             }
         }
 
@@ -188,7 +188,7 @@ namespace Laboration_3.ViewModel
 
         private void ExitGame(object? obj)
         {
-            SaveToMongoDbAsync();
+            SaveToMongoDb();
 
             CanExit = true;
             ExitGameRequested?.Invoke(this, CanExit);
@@ -216,7 +216,7 @@ namespace Laboration_3.ViewModel
                 if (questionPacksExist != null)
                 {
                     GetCollection();
-                    ActivePack = Packs?.FirstOrDefault();
+                    ActivePack = Packs?.FirstOrDefault();                   
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace Laboration_3.ViewModel
             }
         }
     
-        public void SaveToMongoDbAsync()
+        public void SaveToMongoDb()
         {   
             var filter = Builders<QuestionPack>.Filter.Eq("_id", ActivePack.Id);
 
@@ -252,7 +252,7 @@ namespace Laboration_3.ViewModel
             }            
         }
 
-        private void SaveOnShortcut(object? obj) => SaveToMongoDbAsync();
+        private void SaveOnShortcut(object? obj) => SaveToMongoDb();
 
     }
 }

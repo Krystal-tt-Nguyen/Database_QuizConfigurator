@@ -12,10 +12,7 @@ internal class ConfigurationViewModel : ViewModelBase
     private readonly MainWindowViewModel? mainWindowViewModel;
     public QuestionPackViewModel? ActivePack { get => mainWindowViewModel.ActivePack; }
     private IMongoCollection<Category> CategoryCollection { get; set; }
-
     public ObservableCollection<Category> Categories { get; set; }
-
-    //private Category category;
 
     public Category? Category
     {
@@ -27,8 +24,8 @@ internal class ConfigurationViewModel : ViewModelBase
         }
     }
 
-    private Category selectedCategory;
 
+    private Category selectedCategory;
     public Category SelectedCategory
     {
         get => selectedCategory; 
@@ -39,8 +36,8 @@ internal class ConfigurationViewModel : ViewModelBase
             RaisePropertyChanged();
         }
     }
-    private string categoryName;
 
+    private string categoryName;
     public string CategoryName
     {
         get => categoryName; 
@@ -128,9 +125,34 @@ internal class ConfigurationViewModel : ViewModelBase
         TextVisibility = ActivePack?.Questions.Count > 0;
 
         Categories = new ObservableCollection<Category>(); 
+
         ConnectForCategory();
+        LoadCategories();        
+    }
+
+    private void ConnectForCategory()
+    {
+        var connectionString = "mongodb://localhost:27017/";
+
+        var client = new MongoClient(connectionString);
+
+        CategoryCollection = client.GetDatabase("Krystal_Lovisa").GetCollection<Category>("Categories");
+
+        if (CategoryCollection == null)
+        {
+            throw new InvalidOperationException("Can't find document 'Categories' in database.");
+        }
+    }
+
+    private void LoadCategories()
+    {
+        if (CategoryCollection == null)
+        {
+            return;
+        }
 
         var allCategories = CategoryCollection.Find(c => true).ToList();
+
         foreach (var category in allCategories)
         {
             Categories.Add(category);
@@ -165,9 +187,12 @@ internal class ConfigurationViewModel : ViewModelBase
     private void AddCategory(object obj)
     {
         var newCategory = new Category(CategoryName);
+        
         Categories.Add(newCategory);
         CategoryName = string.Empty;
+        
         CategoryCollection.InsertOne(newCategory);
+        UpdateCommandStates();
     }
 
     private void AddQuestion(object? obj) 
@@ -180,7 +205,7 @@ internal class ConfigurationViewModel : ViewModelBase
 
         UpdateCommandStates();
         ChangeTextVisibility();
-        mainWindowViewModel.SaveToMongoDbAsync();
+        mainWindowViewModel.SaveToMongoDb();
     }
 
     private bool IsAddQuestionEnable(object? obj) => IsConfigurationModeVisible;
@@ -190,7 +215,7 @@ internal class ConfigurationViewModel : ViewModelBase
         ActivePack?.Questions.Remove(SelectedQuestion);
         UpdateCommandStates();
         ChangeTextVisibility();
-        mainWindowViewModel.SaveToMongoDbAsync();
+        mainWindowViewModel.SaveToMongoDb();
     }
 
     private bool IsDeleteQuestionEnable(object? obj)
@@ -199,7 +224,7 @@ internal class ConfigurationViewModel : ViewModelBase
     private void EditPackOptions(object? obj)  
     {
         EditPackOptionsRequested.Invoke(this, EventArgs.Empty);
-        mainWindowViewModel.SaveToMongoDbAsync();
+        mainWindowViewModel.SaveToMongoDb();
     } 
 
     private bool IsEditPackOptionsEnable(object? obj) => IsConfigurationModeVisible;
@@ -222,18 +247,10 @@ internal class ConfigurationViewModel : ViewModelBase
     private void UpdateCommandStates()
     {
         AddQuestionCommand.RaiseCanExecuteChanged();
+        AddCategoryCommand.RaiseCanExecuteChanged();
         DeleteQuestionCommand.RaiseCanExecuteChanged();
         EditPackOptionsCommand.RaiseCanExecuteChanged();
         mainWindowViewModel.PlayerViewModel.SwitchToPlayModeCommand.RaiseCanExecuteChanged();
-    }
-
-    private void ConnectForCategory()
-    {
-        var connectionString = "mongodb://localhost:27017/";
-
-        var client = new MongoClient(connectionString);
-
-        CategoryCollection = client.GetDatabase("Krystal_Lovisa").GetCollection<Category>("Categories");
-    }
+    } 
 
 }
