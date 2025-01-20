@@ -14,6 +14,16 @@ internal class ConfigurationViewModel : ViewModelBase
     private IMongoCollection<Category> CategoryCollection { get; set; }
     public ObservableCollection<Category> Categories { get; set; }
 
+    public Category? Category
+    {
+        get => Categories.FirstOrDefault(c => c.Id == ActivePack?.Category?.Id);
+        set
+        {
+            ActivePack.Category = value;
+            RaisePropertyChanged();
+        }
+    }
+
 
     private Category selectedCategory;
     public Category SelectedCategory

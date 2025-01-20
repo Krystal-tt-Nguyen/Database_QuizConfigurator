@@ -57,7 +57,7 @@
                   Height="20" 
                   Margin="10 10 10 0"
                   ItemsSource="{Binding ConfigurationViewModel.Categories}"
-                  SelectedItem="{Binding ActivePack.Category, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding ConfigurationViewModel.Category, UpdateSourceTrigger=PropertyChanged}"
                   DisplayMemberPath="Name">
         </ComboBox>
 
